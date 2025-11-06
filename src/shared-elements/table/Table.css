@@ -1,0 +1,11 @@
+.table-wrapper {
+  /* Additional table-specific styles can be added here */
+}
+
+.table-wrapper table {
+  border-collapse: collapse;
+}
+
+.table-wrapper tbody tr {
+  transition: background-color 0.15s ease-in-out;
+}

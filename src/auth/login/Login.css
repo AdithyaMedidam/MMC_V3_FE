@@ -1,0 +1,261 @@
+/* Login Styles - Split Screen Design */
+.login-container {
+  display: flex;
+  height: 100vh;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Left Side - Branding and Illustration */
+.login-left {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.logo-icon {
+  font-size: 32px;
+}
+
+.logo-text h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+.logo-text p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.illustration {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graduation-cap {
+  font-size: 120px;
+  position: relative;
+  z-index: 3;
+}
+
+.building-bg {
+  position: absolute;
+  font-size: 200px;
+  opacity: 0.1;
+  z-index: 1;
+}
+
+.people {
+  position: absolute;
+  z-index: 4;
+}
+
+.person-1 {
+  position: absolute;
+  top: -20px;
+  left: -10px;
+  font-size: 24px;
+}
+
+.person-2 {
+  position: absolute;
+  bottom: -30px;
+  right: -20px;
+  font-size: 24px;
+}
+
+.study-items {
+  position: absolute;
+  z-index: 4;
+}
+
+.book-1 {
+  position: absolute;
+  top: -40px;
+  left: 20px;
+  font-size: 20px;
+}
+
+.book-2 {
+  position: absolute;
+  top: -20px;
+  right: 20px;
+  font-size: 20px;
+}
+
+.calculator {
+  position: absolute;
+  bottom: -20px;
+  left: 30px;
+  font-size: 18px;
+}
+
+.magnifier {
+  position: absolute;
+  bottom: -40px;
+  right: 30px;
+  font-size: 18px;
+}
+
+.large-logo {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  font-size: 48px;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+/* Right Side - Login Form */
+.login-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  /* background: white; */
+}
+
+.welcome-text {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.welcome-text h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 300;
+  color: #333;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.login-header {
+  padding: 30px 30px 20px 30px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.login-header h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.login-form {
+  padding: 30px;
+}
+
+.username-input,
+.password-input {
+  margin-bottom: 20px;
+}
+
+.remember-checkbox {
+  margin-bottom: 25px;
+}
+
+.login-button {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ff6b35 0%, #f7931e 50%, #ff6b6b 100%);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.forgot-password {
+  text-align: center;
+}
+
+.forgot-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  
+  .login-left {
+    flex: none;
+    height: 40vh;
+    padding: 20px;
+  }
+  
+  .login-right {
+    flex: none;
+    height: 60vh;
+    padding: 20px;
+  }
+  
+  .graduation-cap {
+    font-size: 80px;
+  }
+  
+  .building-bg {
+    font-size: 120px;
+  }
+  
+  .large-logo {
+    font-size: 32px;
+    bottom: 20px;
+    left: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-left,
+  .login-right {
+    padding: 15px;
+  }
+  
+  .login-card {
+    max-width: 100%;
+  }
+  
+  .login-form {
+    padding: 20px;
+  }
+}
