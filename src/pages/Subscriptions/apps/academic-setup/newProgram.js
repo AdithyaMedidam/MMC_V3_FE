@@ -1,146 +1,197 @@
-import React, { useState } from "react";
+import React from "react";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useNavigate } from "react-router-dom";
-import { Card, Button, Input, Select } from '../../../../shared-elements';
-export default function NewProgram({mode, onClose}) {
-    const [form, setForm] = useState({
-        programName: "",
-        affiliation: "",
-        department: "Computer Science",
-        degree: "Bachelor of Engineering",
-        degreeType: "UG/PG/DIPLOMA",
-        duration: "",
-        terms: "",
-        totalCredits: "",
-        minCredits: "",
-        minArrears: "",
-        minAttendance: "",
-        businessUnits: ["Christ University, Kengeri"]
+import { Button, Input, Select, ContentLayout } from '../../../../shared-elements';
+
+export default function NewProgram() {
+    const navigate = useNavigate();
+
+    // React Hook Form setup
+    const { 
+        control, 
+        handleSubmit, 
+        formState: { errors, isValid } 
+    } = useForm({
+        mode: 'onChange', // Validate on change for real-time feedback
+        defaultValues: {
+            programName: "",
+            affiliation: "",
+            department: "Computer Science",
+            degree: "Bachelor of Engineering",
+            degreeType: "UG/PG/DIPLOMA",
+            duration: "",
+            terms: "",
+            totalCredits: "",
+            minCredits: "",
+            minArrears: "",
+            minAttendance: "",
+            businessUnits: [{ value: "Christ University, Kengeri" }]
+        }
     });
 
-    const handleChange = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+    // Check if form is valid (no errors and all required fields filled)
+    const isFormValid = isValid && Object.keys(errors).length === 0;
+
+    // Handle dynamic businessUnits array
+    const { fields: businessUnitFields, append: appendBusinessUnit, remove: removeBusinessUnit } = useFieldArray({
+        control,
+        name: "businessUnits"
+    });
+
+    // Form submission handler
+    const onSubmit = (data) => {
+        console.log("Form Data:", data);
+        // TODO: Add your API call here
+        navigate("/apps/program");
+    };
 
     const addBusinessUnit = () => {
-        setForm(prev => ({ ...prev, businessUnits: [...prev.businessUnits, "Christ University, Kengeri"] }));
+        appendBusinessUnit({ value: "Christ University, Kengeri" });
     };
-    const removeBusinessUnit = (index) => {
-        setForm(prev => ({ ...prev, businessUnits: prev.businessUnits.filter((_, i) => i !== index) }));
+
+    const removeBusinessUnitItem = (index) => {
+        if (businessUnitFields.length > 1) {
+            removeBusinessUnit(index);
+        }
     };
-    const handleBusinessUnitChange = (index) => (e) => {
-        const copy = [...form.businessUnits];
-        copy[index] = e.target.value;
-        setForm(prev => ({ ...prev, businessUnits: copy }));
-    };
-    const navigate = useNavigate();
 
     return (
         <div className="p-6">
             {/* Header Bar */}
-            {mode === "Update" ? (
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold">Edit Program Info</h2>
-                    <div className="flex items-center gap-4">
-     
-                        <Button
-                            variant="cancel"
-                            size="small"
-                            className="normal-case"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="primary"
-                            size="small"
-                            className="!uppercase"
-                            onClick={onClose}
-                        >
-                            Update
-                        </Button>
-                    </div>
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Launch New Program</h2>
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="addButton"
+                        size="small"
+                    >
+                        <AddIcon fontSize="small" />
+                        Upload
+                        <KeyboardArrowDownIcon fontSize="small" />
+                    </Button>
+                    <Button
+                        variant="cancel"
+                        size="small"
+                        className="normal-case"
+                        onClick={() => navigate("/apps/program")}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="orange"
+                        size="small"
+                        onClick={handleSubmit(onSubmit)}
+                        disabled={!isFormValid}
+                        className="normal-case"
+                    >
+                        Launch
+                    </Button>
                 </div>
-            ) : (
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold">Launch New Program</h2>
-                    <div className="flex items-center gap-4">
-                        <Button
-                            variant="addButton"
-                            size="small"
-                        >
-                            <AddIcon fontSize="small" />
-                            Upload
-                            <KeyboardArrowDownIcon fontSize="small" />
-                        </Button>
-                        <Button
-                            variant="cancel"
-                            size="small"
-                            className="normal-case"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="orange"
-                            size="small"
-                            onClick={() => navigate("/apps/program")}
-                            className="normal-case"
-                        >
-                            Launch
-                        </Button>
-                    </div>
-                </div>
-            )}
+            </div>
 
-            <Card className="!shadow-none border">
+            <ContentLayout className="mt-2">
                     {/* Program Details */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:w-2/3">
                         <div>
-                            <Input
-                                label="Program Name"
-                                placeholder="Enter here"
-                                value={form.programName}
-                                onChange={handleChange("programName")}
-                                className="!mb-0"
+                            <Controller
+                                name="programName"
+                                control={control}
+                                rules={{ 
+                                    required: "Program Name is required",
+                                    validate: (value) => {
+                                        if (!value || value.trim() === "") {
+                                            return "Program Name is required";
+                                        }
+                                        return true;
+                                    }
+                                }}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Program Name"
+                                        placeholder="Enter here"
+                                        required
+                                        {...field}
+                                        error={errors.programName?.message}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Input
-                                label="Affiliation"
-                                placeholder="Enter here"
-                                value={form.affiliation}
-                                onChange={handleChange("affiliation")}
-                                className="!mb-0"
+                            <Controller
+                                name="affiliation"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Affiliation"
+                                        placeholder="Enter here"
+                                        {...field}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:w-2/3 mt-4">
                         <div>
-                            <Select
-                                label="Department"
-                                value={form.department}
-                                onChange={handleChange("department")}
-                                options={['Computer Science', 'Information Technology', 'Mechanical', 'Civil'].map(x => ({ value: x, label: x }))}
-                                className="!mb-0"
+                            <Controller
+                                name="department"
+                                control={control}
+                                rules={{ 
+                                    required: "Department is required" 
+                                }}
+                                render={({ field }) => (
+                                    <Select
+                                        label="Department"
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        options={['Computer Science', 'Information Technology', 'Mechanical', 'Civil'].map(x => ({ value: x, label: x }))}
+                                        error={errors.department?.message}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Select
-                                label="Degree"
-                                value={form.degree}
-                                onChange={handleChange("degree")}
-                                options={['Bachelor of Engineering', 'Bachelor of Science', 'Master of Engineering'].map(x => ({ value: x, label: x }))}
-                                className="!mb-0"
+                            <Controller
+                                name="degree"
+                                control={control}
+                                rules={{ 
+                                    required: "Degree is required" 
+                                }}
+                                render={({ field }) => (
+                                    <Select
+                                        label="Degree"
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        options={['Bachelor of Engineering', 'Bachelor of Science', 'Master of Engineering'].map(x => ({ value: x, label: x }))}
+                                        error={errors.degree?.message}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Select
-                                label="Degree Type"
-                                value={form.degreeType}
-                                onChange={handleChange("degreeType")}
-                                options={['UG/PG/DIPLOMA', 'UG', 'PG', 'Diploma'].map(x => ({ value: x, label: x }))}
-                                className="!mb-0"
+                            <Controller
+                                name="degreeType"
+                                control={control}
+                                rules={{ 
+                                    required: "Degree Type is required" 
+                                }}
+                                render={({ field }) => (
+                                    <Select
+                                        label="Degree Type"
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        options={['UG/PG/DIPLOMA', 'UG', 'PG', 'Diploma'].map(x => ({ value: x, label: x }))}
+                                        error={errors.degreeType?.message}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                     </div>
@@ -148,21 +199,44 @@ export default function NewProgram({mode, onClose}) {
                     {/* Academic Detail */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 md:w-1/3">
                         <div>
-                            <Input
-                                label="Durations"
-                                placeholder="Enter here"
-                                value={form.duration}
-                                onChange={handleChange("duration")}
-                                className="!mb-0"
+                            <Controller
+                                name="duration"
+                                control={control}
+                                rules={{ 
+                                    required: "Duration is required" 
+                                }}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Durations"
+                                        placeholder="Enter here"
+                                        required
+                                        {...field}
+                                        error={errors.duration?.message}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Select
-                                label="No of Terms"
-                                value={form.terms}
-                                onChange={handleChange("terms")}
-                                options={[...Array(12)].map((_, i) => ({ value: String(i + 1).padStart(2, '0'), label: String(i + 1).padStart(2, '0') }))}
-                                className="!mb-0"
+                            <Controller
+                                name="terms"
+                                control={control}
+                                rules={{ 
+                                    required: "No of Terms is required" 
+                                }}
+                                render={({ field }) => (
+                                    <Select
+                                        label="No of Terms"
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        options={[
+                                            { value: "", label: "Select" },
+                                            ...[...Array(12)].map((_, i) => ({ value: String(i + 1).padStart(2, '0'), label: String(i + 1).padStart(2, '0') }))
+                                        ]}
+                                        error={errors.terms?.message}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                     </div>
@@ -170,56 +244,102 @@ export default function NewProgram({mode, onClose}) {
                     {/* Program Requirements */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 md:w-1/3">
                         <div>
-                            <Input
-                                label="Total Credits"
-                                placeholder="Enter here"
-                                value={form.totalCredits}
-                                onChange={handleChange("totalCredits")}
-                                className="!mb-0"
+                            <Controller
+                                name="totalCredits"
+                                control={control}
+                                rules={{ 
+                                    required: "Total Credits is required" 
+                                }}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Total Credits"
+                                        placeholder="Enter here"
+                                        required
+                                        {...field}
+                                        error={errors.totalCredits?.message}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Input
-                                label="Min.Credits"
-                                placeholder="Enter here"
-                                value={form.minCredits}
-                                onChange={handleChange("minCredits")}
-                                className="!mb-0"
+                            <Controller
+                                name="minCredits"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Min.Credits"
+                                        placeholder="Enter here"
+                                        {...field}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Input
-                                label="Min.Arrears Allowed"
-                                placeholder="Enter here"
-                                value={form.minArrears}
-                                onChange={handleChange("minArrears")}
-                                className="!mb-0"
+                            <Controller
+                                name="minArrears"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Min.Arrears Allowed"
+                                        placeholder="Enter here"
+                                        {...field}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Input
-                                label="Min.Attendance %"
-                                placeholder="Enter here"
-                                value={form.minAttendance}
-                                onChange={handleChange("minAttendance")}
-                                className="!mb-0"
+                            <Controller
+                                name="minAttendance"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Min.Attendance %"
+                                        placeholder="Enter here"
+                                        {...field}
+                                        className="!mb-0"
+                                    />
+                                )}
                             />
                         </div>
                     </div>
 
                     {/* Assign Business Units */}
                     <div className="grid grid-cols-1 mt-4 md:w-2/5 gap-y-2">
-                        <div className="text-[12px] text-gray-500">Select Business unit</div>
+                        <div className="text-[12px] text-gray-500">Select Business unit <span className="required">*</span></div>
 
-                        {form.businessUnits.map((bu, index) => (
-                            <div key={index} className="grid grid-cols-[1fr_auto] gap-2 items-center mb-2">
-                                <Select
-                                    value={bu}
-                                    onChange={handleBusinessUnitChange(index)}
-                                    options={['Christ University, Kengeri', 'Christ University, Bannerghatta', 'Christ University, Main'].map(x => ({ value: x, label: x }))}
-                                    className="!mb-0"
+                        {businessUnitFields.map((field, index) => (
+                            <div key={field.id} className="grid grid-cols-[1fr_auto] gap-2 items-center mb-2">
+                                <Controller
+                                    name={`businessUnits.${index}.value`}
+                                    control={control}
+                                    rules={{ 
+                                        required: "Please select a business unit",
+                                        validate: (value) => {
+                                            if (!value || value === "" || value === null || value === undefined) {
+                                                return "Please select a business unit";
+                                            }
+                                            return true;
+                                        }
+                                    }}
+                                    render={({ field: businessUnitField }) => (
+                                        <Select
+                                            value={businessUnitField.value}
+                                            onChange={(e) => businessUnitField.onChange(e.target.value)}
+                                            options={['Christ University, Kengeri', 'Christ University, Bannerghatta', 'Christ University, Main'].map(x => ({ value: x, label: x }))}
+                                            error={errors.businessUnits?.[index]?.value?.message}
+                                            className="!mb-0"
+                                        />
+                                    )}
                                 />
-                                <IconButton aria-label="delete" color="error" onClick={() => removeBusinessUnit(index)} disabled={form.businessUnits.length === 1}>
+                                <IconButton 
+                                    aria-label="delete" 
+                                    color="error" 
+                                    onClick={() => removeBusinessUnitItem(index)} 
+                                    disabled={businessUnitFields.length === 1}
+                                >
                                     <DeleteOutlineIcon fontSize="small" />
                                 </IconButton>
                             </div>
@@ -236,7 +356,7 @@ export default function NewProgram({mode, onClose}) {
                             + Business Unit
                         </Button>
                     </div>
-            </Card>
+            </ContentLayout>
         </div>
     );
 }

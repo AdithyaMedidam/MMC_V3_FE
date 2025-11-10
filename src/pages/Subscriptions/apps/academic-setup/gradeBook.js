@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Switch, Chip, IconButton, MenuItem, ListItemText, Checkbox as MuiCheckbox } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Card, Button, Select, Tabs } from '../../../../shared-elements';
+import { Card, Button, Select, Tabs, ContentLayout } from '../../../../shared-elements';
 
 const ruleTypeOptions = ["Best of", "Average of", "Weightage"];
 const assessmentOptions = {
@@ -25,28 +26,45 @@ export default function GradeBook() {
     ];
     const [isEditing, setIsEditing] = useState(false);
 
-    const [rules, setRules] = useState([
-        { id: crypto.randomUUID(), ruleType: "Best of", assessment: ["IA 1"] },
-        { id: crypto.randomUUID(), ruleType: "Average of", assessment: ["Mid Term"] },
-        { id: crypto.randomUUID(), ruleType: "Weightage", assessment: ["Preparatory"] }
-    ]);
-    const handleRuleTypeChange = (id, value) => {
-        setRules(prev =>
-            prev.map(r =>
-                r.id === id
-                    ? {
-                        ...r,
-                        ruleType: value,
-                        // reset assessment if not valid for new rule type
-                        assessment: [assessmentOptions[value][0]]
-                    }
-                    : r
-            )
-        );
-    };
+    // Initial rules data
+    const initialRules = [
+        { ruleType: "Best of", assessment: ["IA 1"] },
+        { ruleType: "Average of", assessment: ["Mid Term"] },
+        { ruleType: "Weightage", assessment: ["Preparatory"] }
+    ];
 
-    const handleAssessmentChange = (id, value) => {
-        setRules(prev => prev.map(r => (r.id === id ? { ...r, assessment: value } : r)));
+    // React Hook Form setup
+    const {
+        control,
+        handleSubmit: handleFormSubmit,
+        formState: { errors, isValid },
+        reset,
+        watch,
+        setValue
+    } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+            rules: initialRules
+        }
+    });
+
+    // Check if form is valid
+    const isFormValid = isValid && Object.keys(errors).length === 0;
+
+    // Handle dynamic rules array
+    const { fields: ruleFields, append: appendRule, remove: removeRule } = useFieldArray({
+        control,
+        name: "rules"
+    });
+
+    // Watch rules to get current values
+    const watchedRules = watch("rules");
+
+    const handleRuleTypeChange = (index, value) => {
+        // Update rule type
+        setValue(`rules.${index}.ruleType`, value, { shouldValidate: true });
+        // Reset assessment to first option of new rule type
+        setValue(`rules.${index}.assessment`, [assessmentOptions[value][0]], { shouldValidate: true });
     };
 
     const renderSelected = (selected) => (
@@ -58,18 +76,38 @@ export default function GradeBook() {
     );
 
     const addRule = () => {
-        setRules(prev => [
-            ...prev,
-            {
-                id: crypto.randomUUID(),
-                ruleType: "Best of",
-                assessment: [assessmentOptions["Best of"][0]]
-            }
-        ]);
+        appendRule({
+            ruleType: "Best of",
+            assessment: [assessmentOptions["Best of"][0]]
+        });
     };
 
-    const removeRule = id => {
-        setRules(prev => prev.filter(r => r.id !== id));
+    const removeRuleItem = (index) => {
+        if (ruleFields.length > 1) {
+            removeRule(index);
+        }
+    };
+
+    const handleEdit = () => {
+        // Reset form to initial values when entering edit mode
+        reset({
+            rules: initialRules
+        });
+        setIsEditing(true);
+    };
+
+    const handleCancel = () => {
+        // Reset form to initial values when canceling
+        reset({
+            rules: initialRules
+        });
+        setIsEditing(false);
+    };
+
+    const onSubmit = (data) => {
+        console.log("Form Data:", data);
+        // TODO: Add API call here
+        setIsEditing(false);
     };
 
     return (
@@ -81,7 +119,7 @@ export default function GradeBook() {
                 <p className="text-[11px] text-gray-500 mt-1">Renewal date: 12/06/2025 <span className="ml-2 inline-block h-2 w-2 rounded-full bg-emerald-500 align-middle" /></p>
             </div>
             {/* Tabs + Actions */}
-            <div className="bg-white rounded-xl boder p-4 mt-4 border">
+            <ContentLayout className="mt-4">
 
                 <div className="flex justify-between items-center border-b pb-0">
                     <Tabs
@@ -115,7 +153,7 @@ export default function GradeBook() {
                                 <Button
                                     variant="transparent"
                                     size="small"
-                                    onClick={() => setIsEditing((prev) => !prev)}
+                                    onClick={handleEdit}
                                 >
                                     <EditIcon fontSize="small" />
                                     <span className="font-medium text-xs uppercase">Edit</span>
@@ -129,7 +167,7 @@ export default function GradeBook() {
 
                 {/* Program Info Card */}
                 {tab === 0 && (
-                    <div className="bg-white mt-4">
+                    <div className="mt-4">
 
                         {/* Version bar */}
                         <div className="flex items-center justify-between px-1 py-3">
@@ -162,9 +200,17 @@ export default function GradeBook() {
                                     />
                                 ) : (
                                     <div className="flex items-center gap-4">
-                                        <Button variant="cancel" size="small" >Cancel</Button>
+                                        <Button variant="cancel" size="small" onClick={handleCancel}>Cancel</Button>
                                         <Button variant="outline" size="small" className="text-fuchsia-700 border-fuchsia-500">Save as New</Button>
-                                        <Button variant="primary" size="small" className="uppercase" onClick={() => setIsEditing((prev) => !prev)}>Update</Button>
+                                        <Button 
+                                            variant="primary" 
+                                            size="small" 
+                                            className="uppercase" 
+                                            onClick={handleFormSubmit(onSubmit)}
+                                            disabled={!isFormValid}
+                                        >
+                                            Update
+                                        </Button>
                                     </div>
                                 )}
                             </div>
@@ -210,78 +256,113 @@ export default function GradeBook() {
                                     </div>
                                 </Card>
                             ) : (
-                                <Card className="border !shadow-none">
+                                <ContentLayout>
                                     <div className="">
                                         <div className="grid grid-cols-1 gap-y-4">
-                                            {rules.map((rule, index) => (
-                                                <div
-                                                    key={rule.id}
-                                                    className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-center md:w-3/4"
-                                                >
-                                                    {/* Rule Type */}
-                                                    <div>
-                                                        <Select
-                                                            label="Rule Type"
-                                                            value={rule.ruleType}
-                                                            onChange={e => handleRuleTypeChange(rule.id, e.target.value)}
-                                                            options={ruleTypeOptions.map(opt => ({ value: opt, label: opt }))}
-                                                            className="!mb-0"
-                                                        />
-                                                    </div>
-
-                                                    {/* Assessment */}
-                                                    <div>
-                                                        <Select
-                                                            label="Assessment"
-                                                            multiple={true}
-                                                            value={rule.assessment}
-                                                            onChange={e => handleAssessmentChange(rule.id, e.target.value)}
-                                                            renderValue={(selected) => renderSelected(selected)}
-                                                            className="!mb-0"
-                                                            menuItems={assessmentOptions[rule.ruleType].map(opt => (
-                                                                <MenuItem 
-                                                                    key={opt} 
-                                                                    value={opt}
-                                                                    sx={{ justifyContent: 'space-between' }}
-                                                                >
-                                                                    <ListItemText primary={opt} />
-                                                                    <MuiCheckbox 
-                                                                        size="small" 
-                                                                        checked={Array.isArray(rule.assessment) && rule.assessment.indexOf(opt) > -1} 
-                                                                        edge="end"
+                                            {ruleFields.map((field, index) => {
+                                                const currentRule = watchedRules[index];
+                                                return (
+                                                    <div
+                                                        key={field.id}
+                                                        className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-center md:w-3/4"
+                                                    >
+                                                        {/* Rule Type */}
+                                                        <div>
+                                                            <Controller
+                                                                name={`rules.${index}.ruleType`}
+                                                                control={control}
+                                                                rules={{
+                                                                    required: "Rule Type is required"
+                                                                }}
+                                                                render={({ field: ruleTypeField }) => (
+                                                                    <Select
+                                                                        label="Rule Type"
+                                                                        value={ruleTypeField.value}
+                                                                        onChange={(e) => {
+                                                                            ruleTypeField.onChange(e.target.value);
+                                                                            // Reset assessment when rule type changes
+                                                                            handleRuleTypeChange(index, e.target.value);
+                                                                        }}
+                                                                        options={ruleTypeOptions.map(opt => ({ value: opt, label: opt }))}
+                                                                        error={errors.rules?.[index]?.ruleType?.message}
+                                                                        className="!mb-0"
+                                                                        required
                                                                     />
-                                                                </MenuItem>
-                                                            ))}
-                                                        />
-                                                    </div>
+                                                                )}
+                                                            />
+                                                        </div>
 
-                                                    {/* Delete button */}
-                                                    <div className="flex md:justify-center">
-                                                        <IconButton
-                                                            aria-label="delete"
-                                                            color="error"
-                                                            onClick={() => removeRule(rule.id)}
-                                                            disabled={rules.length === 1}
-                                                        >
-                                                            <DeleteOutlineIcon fontSize="small" />
-                                                        </IconButton>
+                                                        {/* Assessment */}
+                                                        <div>
+                                                            <Controller
+                                                                name={`rules.${index}.assessment`}
+                                                                control={control}
+                                                                rules={{
+                                                                    required: "Assessment is required",
+                                                                    validate: (value) => {
+                                                                        if (!value || (Array.isArray(value) && value.length === 0)) {
+                                                                            return "At least one assessment must be selected";
+                                                                        }
+                                                                        return true;
+                                                                    }
+                                                                }}
+                                                                render={({ field: assessmentField }) => (
+                                                                    <Select
+                                                                        label="Assessment"
+                                                                        multiple={true}
+                                                                        value={assessmentField.value}
+                                                                        onChange={(e) => assessmentField.onChange(e.target.value)}
+                                                                        renderValue={(selected) => renderSelected(selected)}
+                                                                        error={errors.rules?.[index]?.assessment?.message}
+                                                                        className="!mb-0"
+                                                                        required
+                                                                        menuItems={assessmentOptions[currentRule?.ruleType || "Best of"].map(opt => (
+                                                                            <MenuItem 
+                                                                                key={opt} 
+                                                                                value={opt}
+                                                                                sx={{ justifyContent: 'space-between' }}
+                                                                            >
+                                                                                <ListItemText primary={opt} />
+                                                                                <MuiCheckbox 
+                                                                                    size="small" 
+                                                                                    checked={Array.isArray(assessmentField.value) && assessmentField.value.indexOf(opt) > -1} 
+                                                                                    edge="end"
+                                                                                />
+                                                                            </MenuItem>
+                                                                        ))}
+                                                                    />
+                                                                )}
+                                                            />
+                                                        </div>
+
+                                                        {/* Delete button */}
+                                                        <div className="flex md:justify-center">
+                                                            <IconButton
+                                                                aria-label="delete"
+                                                                color="error"
+                                                                onClick={() => removeRuleItem(index)}
+                                                                disabled={ruleFields.length === 1}
+                                                            >
+                                                                <DeleteOutlineIcon fontSize="small" />
+                                                            </IconButton>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
 
                                             <div className="pt-2">
                                                 <Button
                                                     variant="outline"
                                                     size="small"
                                                     onClick={addRule}
-                                                    className="normal-case text-xs !rounded-full"
+                                                    className="!rounded-full"
                                                 >
                                                     + Add Rule
                                                 </Button>
                                             </div>
                                         </div>
                                     </div>
-                                </Card>
+                                </ContentLayout>
                             )}
                         </div>
                     </div>
@@ -289,7 +370,7 @@ export default function GradeBook() {
 
                 {/* Criteria Tab Content */}
 
-            </div>
+            </ContentLayout>
 
         </div>
 

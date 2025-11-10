@@ -5,6 +5,7 @@ export { default as Input } from './input/Input';
 export { default as Select } from './select/Select';
 export { default as Checkbox } from './checkbox/Checkbox';
 export { default as CardGrid } from './layout/CardGrid';
+export { default as ContentLayout } from './layout/ContentLayout';
 export { default as Header } from './header/Header';
 export { default as DetailHeader } from './header/DetailHeader';
 export { default as SideNav } from './sideNav/SideNav';

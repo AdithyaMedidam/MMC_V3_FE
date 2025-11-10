@@ -8,7 +8,7 @@ import { Edit, Check, Create, CalendarToday } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Button, Card, Input, Select, Checkbox, Tabs } from "../../../../../shared-elements";
+import { Button, Card, Input, Select, Checkbox, Tabs, ContentLayout } from "../../../../../shared-elements";
 
 export default function TermLMS() {
     const [activeTab, setActiveTab] = useState(0); // General
@@ -125,7 +125,7 @@ export default function TermLMS() {
             </div>
 
             {/* Tabs */}
-            <div className="bg-white rounded-xl shadow-sm">
+            <ContentLayout className="mt-4">
                 <div className="px-4 pt-4">
                     <Tabs
                         tabs={tabsData}
@@ -818,7 +818,7 @@ export default function TermLMS() {
                         </Card>
                     </div>
                 )}
-            </div>
+            </ContentLayout>
         </div>
     );
 }

@@ -3,8 +3,8 @@ import { Switch } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import NewProgram from "./newProgram";
-import { Card, Button, Tabs } from '../../../../shared-elements';
+import UpdateProgram from "./updateProgram";
+import { Card, Button, Tabs, ContentLayout } from '../../../../shared-elements';
 
 export default function ProgramInfo() {
     const [tab, setTab] = useState(0);
@@ -47,7 +47,7 @@ setEdit(true);
               <h2 className="text-[20px] font-semibold mb-4 border-b pb-2">General</h2>
       
               {/* Tabs + Actions */}
-              <Card className="!shadow-none border">
+              <ContentLayout>
                 <div className="flex justify-between items-center border-b pb-0">
                   <Tabs
                     tabs={tabItems}
@@ -174,10 +174,10 @@ setEdit(true);
                     </Card>
                   </div>
                 )}
-              </Card>
+              </ContentLayout>
             </div>
           ) : (
-            <NewProgram mode="Update" onClose={handleClose}/>
+            <UpdateProgram onClose={handleClose}/>
           )}
         </div>
       );

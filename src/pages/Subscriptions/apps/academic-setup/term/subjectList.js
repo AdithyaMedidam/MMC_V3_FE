@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Add as AddIcon } from "@mui/icons-material";
 import Sub_Icon from '../../../../../assets/img/sub_img.png';
 import { useNavigate } from "react-router-dom";
@@ -33,19 +34,52 @@ export default function SubjectList() {
 
     // dialog state
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [subjectName, setSubjectName] = useState("");
-    const [subjectCode, setSubjectCode] = useState("");
-    const [subjectType, setSubjectType] = useState("Theory");
-    const [subjectCategory, setSubjectCategory] = useState("Regular");
+    const navigate = useNavigate();
 
-    const handleOpenDialog = () => setIsDialogOpen(true);
-    const handleCloseDialog = () => setIsDialogOpen(false);
-    const handleAddSubject = () => {
-        // TODO: wire to API later
-        // simple close for now
+    // React Hook Form setup
+    const {
+        control,
+        handleSubmit: handleFormSubmit,
+        formState: { errors, isValid },
+        reset
+    } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+            subjectName: "",
+            subjectCode: "",
+            subjectType: "Theory",
+            subjectCategory: "Regular"
+        }
+    });
+
+    // Check if form is valid
+    const isFormValid = isValid && Object.keys(errors).length === 0;
+
+    const handleOpenDialog = () => {
+        reset({
+            subjectName: "",
+            subjectCode: "",
+            subjectType: "Theory",
+            subjectCategory: "Regular"
+        });
+        setIsDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        reset({
+            subjectName: "",
+            subjectCode: "",
+            subjectType: "Theory",
+            subjectCategory: "Regular"
+        });
         setIsDialogOpen(false);
     };
-    const navigate = useNavigate();
+
+    const onSubmit = (data) => {
+        console.log("Form Data:", data);
+        // TODO: Add API call here
+        handleCloseDialog();
+    };
 
     const subjects = [
         {
@@ -195,11 +229,11 @@ export default function SubjectList() {
                 actions={
                     <>
                         <Button
-                            onClick={handleAddSubject}
+                            onClick={handleFormSubmit(onSubmit)}
                             variant="orange"
                             size="small"
                             className="uppercase min-w-[80px]"
-                            
+                            disabled={!isFormValid}
                         >
                             ADD
                         </Button>
@@ -209,44 +243,96 @@ export default function SubjectList() {
             >
                 <div className="">
                     <div>
-                        <Input
-                            label="Subject Name"
-                            placeholder="Engineering Graphics"
-                            value={subjectName}
-                            onChange={(e) => setSubjectName(e.target.value)}
-                            className="w-full"
+                        <Controller
+                            name="subjectName"
+                            control={control}
+                            rules={{
+                                required: "Subject Name is required",
+                                validate: (value) => {
+                                    if (!value || value.trim() === "") {
+                                        return "Subject Name is required";
+                                    }
+                                    return true;
+                                }
+                            }}
+                            render={({ field }) => (
+                                <Input
+                                    label="Subject Name"
+                                    placeholder="Engineering Graphics"
+                                    required
+                                    {...field}
+                                    error={errors.subjectName?.message}
+                                    className="w-full"
+                                />
+                            )}
                         />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <Input
-                                label="Subject Code"
-                                placeholder="EG1315"
-                                value={subjectCode}
-                                onChange={(e) => setSubjectCode(e.target.value)}
-                                className="w-full"
+                            <Controller
+                                name="subjectCode"
+                                control={control}
+                                rules={{
+                                    required: "Subject Code is required",
+                                    validate: (value) => {
+                                        if (!value || value.trim() === "") {
+                                            return "Subject Code is required";
+                                        }
+                                        return true;
+                                    }
+                                }}
+                                render={({ field }) => (
+                                    <Input
+                                        label="Subject Code"
+                                        placeholder="EG1315"
+                                        required
+                                        {...field}
+                                        error={errors.subjectCode?.message}
+                                        className="w-full"
+                                    />
+                                )}
                             />
                         </div>
                         <div>
-                            <Select
-                                label="Subject Type"
-                                value={subjectType}
-                                onChange={(e) => setSubjectType(e.target.value)}
-                                options={subjectTypeOptions}
-                                className="w-full"
+                            <Controller
+                                name="subjectType"
+                                control={control}
+                                rules={{
+                                    required: "Subject Type is required"
+                                }}
+                                render={({ field }) => (
+                                    <Select
+                                        label="Subject Type"
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        options={subjectTypeOptions}
+                                        error={errors.subjectType?.message}
+                                        className="w-full"
+                                    />
+                                )}
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <Select
-                                label="Subject Category"
-                                value={subjectCategory}
-                                onChange={(e) => setSubjectCategory(e.target.value)}
-                                options={subjectCategoryOptions}
-                                className="w-full"
+                            <Controller
+                                name="subjectCategory"
+                                control={control}
+                                rules={{
+                                    required: "Subject Category is required"
+                                }}
+                                render={({ field }) => (
+                                    <Select
+                                        label="Subject Category"
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        options={subjectCategoryOptions}
+                                        error={errors.subjectCategory?.message}
+                                        className="w-full"
+                                    />
+                                )}
                             />
                         </div>
                     </div>

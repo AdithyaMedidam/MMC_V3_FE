@@ -1,0 +1,16 @@
+/* CSS Variables - Change these to update styling globally across all ContentLayout instances */
+.content-layout {
+  --content-layout-bg: #FFFFFF;
+  --content-layout-border: #e5e7eb;
+  --content-layout-border-radius: 0.75rem;
+  --content-layout-padding: 1.25rem;
+  --content-layout-shadow: none;
+  
+  /* Apply the styles using CSS variables */
+  background-color: var(--content-layout-bg);
+  border: 1px solid var(--content-layout-border);
+  border-radius: var(--content-layout-border-radius);
+  padding: var(--content-layout-padding);
+  box-shadow: var(--content-layout-shadow);
+  width: 100%;
+}

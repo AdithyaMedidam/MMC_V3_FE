@@ -5,7 +5,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import Program_Icon from '../../../../assets/img/program_img.png';
-import { Card, Button, CardGrid } from '../../../../shared-elements';
+import { Card, Button, CardGrid, ContentLayout } from '../../../../shared-elements';
 import {
     FormControl,
     Select,
@@ -142,12 +142,10 @@ export default function ProgramsPage() {
                     </Button>
                 </div>
             </div>
-            <Card className="!shadow-none">
-
+            <ContentLayout>
                 {/* Header */}
                 <div className="flex justify-start items-center mb-6 mt-3">
                     <h2 className="text-xl font-semibold">Programs</h2>
-
                 </div>
 
                 {/* Grid */}
@@ -192,7 +190,7 @@ export default function ProgramsPage() {
                         </Card>
                     ))}
                 </CardGrid>
-            </Card>
+            </ContentLayout>
         </div >
     );
 }

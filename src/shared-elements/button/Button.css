@@ -1,13 +1,97 @@
+/* Design Tokens (override these to theme globally) */
+:root {
+  /* Button token variables (edit these to restyle buttons without touching classes) */
+  --button-bg: var(--clr-transparent);
+  --button-color: var(--clr-text);
+  --button-shadow: none;
+  --button-radius: 4px;
+  --button-hover-bg: var(--clr-transparent);
+  --button-hover-color: var(--clr-text);
+  --button-hover-shadow: none;
+
+  /* Variant tokens */
+  --button-primary-bg: var(--clr-blue-500);
+  --button-primary-color: var(--clr-white);
+  --button-primary-hover-bg: var(--clr-blue-400);
+
+  --button-secondary-bg: var(--clr-secondary-600);
+  --button-secondary-color: var(--clr-white);
+  --button-secondary-hover-bg: var(--clr-secondary-700);
+
+  --button-outline-bg: var(--clr-transparent);
+  --button-outline-color: var(--clr-blue-600);
+  --button-outline-border-color: var(--clr-blue-600);
+  --button-outline-hover-bg: var(--clr-blue-600);
+  --button-outline-hover-color: var(--clr-white);
+
+  --button-cancel-bg: var(--clr-transparent);
+  --button-cancel-color: var(--clr-gray-700);
+  --button-cancel-border-color: var(--clr-gray-300);
+  --button-cancel-hover-shadow: var(--elev-2);
+  --button-cancel-radius: 6px;
+
+  --button-add-bg: var(--clr-purple-600);
+  --button-add-color: var(--clr-white);
+  --button-add-radius: 6px;
+
+  --button-gradient-bg: var(--grad-brand);
+  --button-gradient-color: var(--clr-white);
+
+  --button-orange-bg: var(--grad-orange);
+  --button-orange-color: var(--clr-white);
+  --button-orange-radius: 6px;
+
+  --button-transparent-color: var(--clr-blue-600);
+
+  --clr-transparent: transparent;
+  --clr-white: #ffffff;
+  --clr-surface: #ffffff;
+  --clr-text: #111827;
+
+  /* Neutrals */
+  --clr-gray-300: #d1d5db;
+  --clr-gray-500: #6b7280;
+  --clr-gray-700: #374151;
+
+  /* Secondary (Bootstrap-ish) */
+  --clr-secondary-600: #6c757d;
+  --clr-secondary-700: #5a6268;
+
+  /* Blues */
+  --clr-blue-600: #1976d2;
+  --clr-blue-500: #2589FF;
+  --clr-blue-400: #24ABFF;
+
+  /* Purples/Pinks/Oranges */
+  --clr-purple-600: #AF22C6;
+  --clr-fuchsia-600: #C567FF;
+  --clr-orange-500: #FF5600;
+  --clr-pink-500: #FF3567;
+  --clr-yellow-300: #FFDA65;
+
+  /* Shadows */
+  --elev-1: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --elev-2: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --elev-3: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  /* Gradients */
+  --grad-brand: linear-gradient(95.04deg, var(--clr-yellow-300) -15.49%, var(--clr-pink-500) 45.72%, var(--clr-fuchsia-600) 131.1%);
+  --grad-orange: linear-gradient(91.69deg, var(--clr-orange-500) 1.43%, var(--clr-pink-500) 94.05%);
+}
+
 /* Button Styles */
 .btn {
-  border: none;
-  border-radius: 4px;
+  border: none;                         /* can be overridden by variants */
+  border-radius: var(--button-radius);
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: var(--button-bg);
+  color: var(--button-color);
+  box-shadow: var(--button-shadow);
 }
 
 .btn:disabled {
@@ -17,95 +101,88 @@
 
 /* Variants */
 .btn-primary {
-  background-color: #2589FF;
-  color: white;
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-color);
 }
-
 .btn-primary:hover:not(:disabled) {
-  background-color: #24ABFF;
+  background-color: var(--button-primary-hover-bg);
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-color);
 }
-
 .btn-secondary:hover:not(:disabled) {
-  background-color: #5a6268;
+  background-color: var(--button-secondary-hover-bg);
 }
 
 .btn-outline {
-  background-color: transparent;
-  border: 1px solid #1976d2;
-  color: #1976d2;
+  background-color: var(--button-outline-bg);
+  border: 1px solid var(--button-outline-border-color);
+  color: var(--button-outline-color);
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--button-outline-hover-bg);
+  color: var(--button-outline-hover-color);
 }
 
-.btn-outline:hover:not(:disabled) {
-  background-color: #1976d2;
-  color: white;
-}
 .btn-cancel {
-  background-color: transparent;
-  border: 1px solid #d1d5db ;
-  color: #374151 !important;
-  border-radius: 6px;
+  background-color: var(--button-cancel-bg);
+  border: 1px solid var(--button-cancel-border-color);
+  color: var(--button-cancel-color);
+  border-radius: var(--button-cancel-radius);
   text-transform: uppercase;
 }
-
 .btn-cancel:hover:not(:disabled) {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
+  box-shadow: var(--button-cancel-hover-shadow);
 }
 
 .btn-addButton {
-  background: #AF22C6;
-  color: white;
+  background-color: var(--button-add-bg);
+  color: var(--button-add-color);
   font-weight: 600;
   /* width: 100%; */
-  border-radius: 6px;
+  border-radius: var(--button-add-radius);
 }
 .btn-gradient {
-  background: linear-gradient(95.04deg, #FFDA65 -15.49%, #FF3465 45.72%, #C567FF 131.1%);
-  color: white;
+  background: var(--button-gradient-bg);
+  color: var(--button-gradient-color);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   width: 100%;
 }
-
 .btn-gradient:hover:not(:disabled) {
-  background: linear-gradient(95.04deg, #FFDA65 -15.49%, #FF3465 45.72%, #C567FF 131.1%);
+  background: var(--button-gradient-bg);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--elev-3);
 }
 .btn-orange {
-  background: linear-gradient(91.69deg, #FF5600 1.43%, #FF3567 94.05%);
-  color: white;
+  background: var(--button-orange-bg);
+  color: var(--button-orange-color);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   /* width: 100%; */
-  border-radius: 6px;
+  border-radius: var(--button-orange-radius);
 }
-
 .btn-orange:hover:not(:disabled) {
-  background: linear-gradient(91.69deg, #FF5600 1.43%, #FF3567 94.05%);
+  background: var(--button-orange-bg);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
+  box-shadow: var(--elev-3);
+  border-radius: var(--button-orange-radius);
   opacity: 0.8;
 }
 
 .btn-transparent {
-  background-color: transparent;
+  background: var(--button-bg);
   border: none;
-  color: #1976d2;
+  color: var(--button-transparent-color);
   font-size: 12px;
   padding: 0;
 }
-
 .btn-transparent:hover:not(:disabled) {
-  background-color: transparent;
+  background: var(--button-bg);
   opacity: 0.8;
 }
 

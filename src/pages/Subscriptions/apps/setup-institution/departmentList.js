@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Check as CheckIcon } from "@mui/icons-material";
 import { IconButton, Switch } from "@mui/material";
-import { Button, Select, Input, Table, SearchBar, Card, CardGrid } from "../../../../shared-elements";
+import { Button, Select, Input, Table, SearchBar, Card, CardGrid, ContentLayout } from "../../../../shared-elements";
 
 const rows = [
     { dept: "Computer Science", type: "Academic", programs: "03", staffs: "25", hod: "Prof.George Thomas.T" },
@@ -15,8 +16,29 @@ export default function DepartmentList() {
     const [data, setData] = useState(rows);
     const [draft, setDraft] = useState({ dept: "", type: "Academic", programs: "", staffs: "", hod: "" });
     const [showAddForm, setShowAddForm] = useState(false);
-    const [departments, setDepartments] = useState([{ name: "", type: "Academic" }]);
     const [toggleValue, setToggleValue] = useState(false);
+
+    // React Hook Form setup for Add Department Form
+    const { 
+        control: addFormControl, 
+        handleSubmit: handleAddFormSubmit, 
+        formState: { errors: addFormErrors, isValid: isAddFormValid },
+        reset: resetAddForm
+    } = useForm({
+        mode: 'onChange',
+        defaultValues: {
+            departments: [{ name: "", type: "Academic" }]
+        }
+    });
+
+    // Check if add form is valid
+    const isAddFormValidated = isAddFormValid && Object.keys(addFormErrors).length === 0;
+
+    // Handle dynamic departments array
+    const { fields: departmentFields, append: appendDepartment, remove: removeDepartment } = useFieldArray({
+        control: addFormControl,
+        name: "departments"
+    });
 
     const startEdit = (i) => {
         setEditingIndex(i);
@@ -31,23 +53,18 @@ export default function DepartmentList() {
     };
 
     const addDepartment = () => {
-        setDepartments([...departments, { name: "", type: "Academic" }]);
+        appendDepartment({ name: "", type: "Academic" });
     };
 
-    const removeDepartment = (index) => {
-        if (departments.length > 1) {
-            setDepartments(departments.filter((_, i) => i !== index));
+    const removeDepartmentItem = (index) => {
+        if (departmentFields.length > 1) {
+            removeDepartment(index);
         }
     };
 
-    const handleDepartmentChange = (index, field) => (e) => {
-        const copy = [...departments];
-        copy[index][field] = e.target.value;
-        setDepartments(copy);
-    };
-
-    const handleAddAll = () => {
-        const newRows = departments.map(dept => ({
+    // Form submission handler
+    const onSubmitDepartments = (formData) => {
+        const newRows = formData.departments.map(dept => ({
             dept: dept.name,
             type: dept.type,
             programs: "03",
@@ -55,7 +72,9 @@ export default function DepartmentList() {
             hod: "Prof.George Thomas.T"
         }));
         setData([...data, ...newRows]);
-        setDepartments([{ name: "", type: "Academic" }]);
+        resetAddForm({
+            departments: [{ name: "", type: "Academic" }]
+        });
         setShowAddForm(false);
     };
 
@@ -209,7 +228,12 @@ export default function DepartmentList() {
                             <Button
                                 variant="cancel"
                                 className=""
-                                onClick={() => setShowAddForm(false)}
+                                onClick={() => {
+                                    resetAddForm({
+                                        departments: [{ name: "", type: "Academic" }]
+                                    });
+                                    setShowAddForm(false);
+                                }}
                                 size="small"
                             >
                                 Cancel
@@ -217,7 +241,8 @@ export default function DepartmentList() {
                             <Button
                                 variant="primary"
                                 className="!uppercase min-w-[80px]"
-                                onClick={handleAddAll}
+                                onClick={handleAddFormSubmit(onSubmitDepartments)}
+                                disabled={!isAddFormValidated}
                                 size="small"
                             >
                                 Add
@@ -225,39 +250,66 @@ export default function DepartmentList() {
                         </div>
                     </div>
 
-                    <Card className="!shadow-none border">
+                    <ContentLayout className="mt-4">
                         {/* Form Array */}
                         <div className="space-y-4">
-                            {departments.map((dept, index) => (
-                                <CardGrid key={index} cols={1} mdCols={3} gap={6} className="items-end">
+                            {departmentFields.map((field, index) => (
+                                <CardGrid key={field.id} cols={1} mdCols={3} gap={6} className="items-end">
                                     <div>
-                                        <Input
-                                            label="Department Name"
-                                            placeholder="Enter here"
-                                            value={dept.name}
-                                            onChange={handleDepartmentChange(index, 'name')}
-                                            className="!mb-0"
+                                        <Controller
+                                            name={`departments.${index}.name`}
+                                            control={addFormControl}
+                                            rules={{ 
+                                                required: "Department Name is required",
+                                                validate: (value) => {
+                                                    if (!value || value.trim() === "") {
+                                                        return "Department Name is required";
+                                                    }
+                                                    return true;
+                                                }
+                                            }}
+                                            render={({ field: nameField }) => (
+                                                <Input
+                                                    label="Department Name"
+                                                    placeholder="Enter here"
+                                                    required
+                                                    {...nameField}
+                                                    error={addFormErrors.departments?.[index]?.name?.message}
+                                                    className="!mb-0"
+                                                />
+                                            )}
                                         />
                                     </div>
                                     <div>
-                                        <Select
-                                            label="Department Type"
-                                            value={dept.type}
-                                            onChange={handleDepartmentChange(index, 'type')}
-                                            options={[
-                                                { value: "Academic", label: "Academic" },
-                                                { value: "Non-Academic", label: "Non-Academic" }
-                                            ]}
-                                            className="!mb-0"
-                                            SelectProps={{ size: "small" }}
+                                        <Controller
+                                            name={`departments.${index}.type`}
+                                            control={addFormControl}
+                                            rules={{ 
+                                                required: "Department Type is required"
+                                            }}
+                                            render={({ field: typeField }) => (
+                                                <Select
+                                                    label="Department Type"
+                                                    value={typeField.value}
+                                                    onChange={(e) => typeField.onChange(e.target.value)}
+                                                    options={[
+                                                        { value: "Academic", label: "Academic" },
+                                                        { value: "Non-Academic", label: "Non-Academic" }
+                                                    ]}
+                                                    error={addFormErrors.departments?.[index]?.type?.message}
+                                                    className="!mb-0"
+                                                    SelectProps={{ size: "small" }}
+                                                    required
+                                                />
+                                            )}
                                         />
                                     </div>
-                                    {departments.length > 1 && (
+                                    {departmentFields.length > 1 && (
                                         <div className="flex justify-start">
                                             <IconButton
                                                 color="error"
                                                 size="small"
-                                                onClick={() => removeDepartment(index)}
+                                                onClick={() => removeDepartmentItem(index)}
                                             >
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
@@ -278,7 +330,7 @@ export default function DepartmentList() {
                                 Department
                             </Button>
                         </div>
-                    </Card>
+                    </ContentLayout>
                 </>
             )}
         </div>

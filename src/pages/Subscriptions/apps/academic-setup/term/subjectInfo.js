@@ -7,7 +7,7 @@ import GetAppIcon from "@mui/icons-material/GetApp";
 import AppsIcon from "@mui/icons-material/Apps";
 import VerticalAlignTopOutlinedIcon from '@mui/icons-material/VerticalAlignTopOutlined';
 import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
-import { Card, Button, Tabs, Accordion, Dialog, Input } from "../../../../../shared-elements";
+import { Card, Button, Tabs, Accordion, Dialog, Input, ContentLayout } from "../../../../../shared-elements";
 
 export default function SubjectInfo() {
     const [active, setActive] = useState(true);
@@ -143,7 +143,7 @@ export default function SubjectInfo() {
             </div>
 
             {/* Tabs + Actions */}
-            <div className="bg-white rounded-xl border mt-4 p-4">
+            <ContentLayout className="mt-4">
                 <div className="flex justify-between items-center border-b">
                     <Tabs
                         tabs={tabs}
@@ -622,7 +622,7 @@ export default function SubjectInfo() {
                         </Card>
                     </div>
                 )}
-            </div>
+            </ContentLayout>
 
             <Dialog
                 open={bulkOpen}

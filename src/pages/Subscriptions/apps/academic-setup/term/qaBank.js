@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Switch, Chip } from "@mui/material";
 import { Edit as EditIcon } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
-import { Button, Card, Input, Select, Checkbox, Tabs } from "../../../../../shared-elements";
+import { Button, Card, Input, Select, Checkbox, Tabs, ContentLayout } from "../../../../../shared-elements";
 
 
 const initialRows = [
@@ -91,7 +91,7 @@ export default function QABank() {
                     </div>
                 </div>
             </div>
-            <div className="p-5 m-4 pt-3 bg-white rounded-xl border">
+            <ContentLayout className="m-4">
                 {/* Tabs header */}
                 <div className="flex items-center gap-6 border-b">
                     <Tabs 
@@ -359,7 +359,7 @@ export default function QABank() {
                         </div>
                     </>
                 )}
-            </div>
+            </ContentLayout>
         </div>
     );
 }

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Edit as EditIcon, Lock as LockIcon, PhoneIphone as PhoneIcon } from "@mui/icons-material";
 import { Switch } from "@mui/material";
 import School_Logo from '../../../../assets/img/School_Logo.png';
-import CreateBusinessUnit from "./createBusinessUnit";
-import { Dialog, Input, Button, Card } from "../../../../shared-elements";
+import UpdateBusinessUnit from "./updateBusinessUnit";
+import { Dialog, Input, Button, Card, ContentLayout } from "../../../../shared-elements";
 
 
 export default function AccountInfo() {
@@ -27,7 +27,7 @@ export default function AccountInfo() {
 
 
                     </div>
-                    <Card className="border !shadow-none">
+                    <ContentLayout className="mt-4">
                         {/* Header */}
                         <div className="border-b px-1 pb-4">
                             <div className="text-sm font-medium text-gray-900">User Account</div>
@@ -122,7 +122,7 @@ export default function AccountInfo() {
                                 </div>
                             </div>
                         </div>
-                    </Card>
+                    </ContentLayout>
 
                     {/* Change Password Dialog */}
                     <Dialog
@@ -138,14 +138,13 @@ export default function AccountInfo() {
                         actions={
                             <>
                                 <Button
-                                    variant="primary"
-                                    className="normal-case !bg-gradient-to-r !from-[#FF5600] !to-[#FF3567]"
+                                    variant="orange"
                                     onClick={() => setPwdOpen(false)}
                                 >
                                     Save
                                 </Button>
                                 <Button
-                                    variant="outline"
+                                    variant="cancel"
                                     className="normal-case"
                                     onClick={() => setPwdOpen(false)}
                                 >
@@ -205,15 +204,13 @@ export default function AccountInfo() {
                         actions={
                             <>
                                 <Button
-                                    variant="primary"
-                                    className="normal-case !bg-gradient-to-r !from-[#FF5600] !to-[#FF3567]"
+                                    variant="orange"
                                     onClick={() => setPhoneOpen(false)}
                                 >
                                     Update
                                 </Button>
                                 <Button
-                                    variant="outline"
-                                    className="normal-case"
+                                    variant="cancel"
                                     onClick={() => setPhoneOpen(false)}
                                 >
                                     Cancel
@@ -262,7 +259,7 @@ export default function AccountInfo() {
                         </div>
                     </Dialog>
                 </div> :
-                <CreateBusinessUnit mode="update" onClose={() => setEdit(false)} />
+                <UpdateBusinessUnit onClose={() => setEdit(false)} />
             }
         </div>
     );

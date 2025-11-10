@@ -1,16 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { Input, Select, Checkbox, Button, ContentLayout } from "../../../../shared-elements";
 
-export default function CreateBusinessUnit() {
-    const navigate = useNavigate();
-
+export default function UpdateBusinessUnit({ onClose }) {
     // React Hook Form setup
-    const {
-        control,
-        handleSubmit,
-        formState: { errors, isValid }
+    const { 
+        control, 
+        handleSubmit, 
+        formState: { errors, isValid } 
     } = useForm({
         mode: 'onChange', // Validate on change for real-time feedback
         defaultValues: {
@@ -79,21 +76,25 @@ export default function CreateBusinessUnit() {
         console.log("Form Data:", data);
         console.log("Logo File:", logoFile);
         // TODO: Add your API call here
-        // navigate("/apps/setup-institution");
+        // onClose(); // Close after successful update
     };
+
+    const handleClose = () => {
+        onClose();
+    }
 
     return (
         <div className="min-h-[100svh]">
             {/* Top action bar */}
             <div className="top-0 z-10 flex items-center justify-between gap-4 px-8 py-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-gray-800">Add Business Unit</h1>
+                    <h1 className="text-xl font-semibold text-gray-800">Update Business Unit</h1>
                 </div>
                 <div className="flex gap-4 items-center">
                     <Button
                         variant="cancel"
                         size="small"
-                        onClick={() => navigate(-1)}
+                        onClick={handleClose}
                         className="!border-gray-300 !text-gray-700"
                     >
                         Cancel
@@ -105,7 +106,7 @@ export default function CreateBusinessUnit() {
                         className="!uppercase min-w-[80px]"
                         disabled={!isFormValid}
                     >
-                        Add
+                        Update
                     </Button>
                 </div>
             </div>
@@ -118,8 +119,8 @@ export default function CreateBusinessUnit() {
                             <Controller
                                 name="businessUnitName"
                                 control={control}
-                                rules={{
-                                    required: "Business unit name is required"
+                                rules={{ 
+                                    required: "Business unit name is required" 
                                 }}
                                 render={({ field }) => (
                                     <Input
@@ -429,7 +430,7 @@ export default function CreateBusinessUnit() {
                                     {logoPreview ? (
                                         <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" />
                                     ) : (
-                                        <span className="text-xs">64*64</span>
+                                        <span className="text-xs">64×64</span>
                                     )}
                                 </div>
                                 <div className="space-y-3 flex-1">
@@ -472,3 +473,4 @@ export default function CreateBusinessUnit() {
         </div>
     );
 }
+

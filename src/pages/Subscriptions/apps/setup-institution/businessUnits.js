@@ -3,7 +3,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
-import { Card, Button, Select, CardGrid } from "../../../../shared-elements";
+import { Card, Button, Select, CardGrid, ContentLayout } from "../../../../shared-elements";
 
 const businessUnits = [
   {
@@ -91,7 +91,7 @@ export default function BusinessUnits() {
       </div>
 
       {/* Cards */}
-      <Card className="!shadow-none">
+      <ContentLayout className="mt-4">
         <h1 className="text-xl font-semibold pb-4">Business units</h1>
 
         <CardGrid cols={1} mdCols={2} lgCols={3} gap={6}>
@@ -136,7 +136,7 @@ export default function BusinessUnits() {
 
           ))}
         </CardGrid>
-      </Card>
+      </ContentLayout>
     </div>
   );
 }
